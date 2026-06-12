@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Script de configuración rápida para el proyecto
+
+echo ""
+echo "===================================="
+echo "  Sistema de Gestión de Asistencia"
+echo "  Script de Configuración Rápida"
+echo "===================================="
+echo ""
+
+# Configurar Backend
+echo "[1] Configurando Backend..."
+cd backend
+if [ -d "node_modules" ]; then
+    echo "Backend ya tiene node_modules instalados"
+else
+    echo "Instalando dependencias del backend..."
+    npm install
+fi
+
+if [ -f ".env" ]; then
+    echo ".env ya existe en backend"
+else
+    echo "Creando .env desde .env.example..."
+    cp .env.example .env
+    echo "Por favor, editar backend/.env con tus credenciales"
+fi
+
+cd ..
+echo ""
+
+# Configurar Frontend
+echo "[2] Configurando Frontend..."
+cd frontend
+if [ -d "node_modules" ]; then
+    echo "Frontend ya tiene node_modules instalados"
+else
+    echo "Instalando dependencias del frontend..."
+    npm install
+fi
+cd ..
+echo ""
+
+echo "===================================="
+echo "¡Configuración completada!"
+echo "===================================="
+echo ""
+echo "Próximos pasos:"
+echo ""
+echo "1. Editar credenciales de BD:"
+echo "   nano backend/.env"
+echo ""
+echo "2. Crear base de datos PostgreSQL:"
+echo "   createdb asistencia_db"
+echo ""
+echo "3. Importar esquema:"
+echo "   psql -U postgres -d asistencia_db -f database/schema.sql"
+echo ""
+echo "4. Iniciar Backend (terminal 1):"
+echo "   cd backend"
+echo "   npm run dev"
+echo ""
+echo "5. Iniciar Frontend (terminal 2):"
+echo "   cd frontend"
+echo "   npm run dev"
+echo ""
+echo "Frontend: http://localhost:3000"
+echo "Backend:  http://localhost:5000"
+echo ""
