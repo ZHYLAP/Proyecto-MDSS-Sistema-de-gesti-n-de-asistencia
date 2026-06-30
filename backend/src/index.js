@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import scheduleRoutes from './routes/schedules.js';
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.get('/api/health', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to Asistencia API' });
 });
+
+app.use('/api', scheduleRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
