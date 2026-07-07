@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateSchedule, evaluateAttendanceStatus } from '../src/services/modulo.js';
+import { validateSchedule, saveSchedule, evaluateAttendanceStatus } from '../src/services/modulo.js';
 
 test('permite guardar un horario cuando no hay cruce y hay menos de 5 cursos', () => {
   const result = validateSchedule({
@@ -44,6 +44,45 @@ test('rechaza un horario cuando supera el límite de 5 cursos', () => {
 
   assert.equal(result.isValid, false);
   assert.match(result.errors.join(' '), /5 cursos/i);
+});
+
+test('guarda un horario válido cuando el callback de persistencia se ejecuta', async () => {
+  let persisted = false;
+
+  const result = await saveSchedule({
+    newSchedule: { day: 'Lunes', start: '08:00', end: '10:00' },
+    existingSchedules: [],
+    maxCourses: 5,
+    persist: true,
+    onPersist: async () => {
+      persisted = true;
+      return { saved: true };
+    }
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(persisted, true);
+});
+
+test('rechaza el guardado cuando la validación falla incluso si se intenta persistir', async () => {
+  let persisted = false;
+
+  const result = await saveSchedule({
+    newSchedule: { day: 'Lunes', start: '09:00', end: '11:00' },
+    existingSchedules: [
+      { day: 'Lunes', start: '08:00', end: '10:00' }
+    ],
+    maxCourses: 5,
+    persist: true,
+    onPersist: async () => {
+      persisted = true;
+      return { saved: true };
+    }
+  });
+
+  assert.equal(result.success, false);
+  assert.equal(persisted, false);
+  assert.match(result.errors.join(' '), /cruce/i);
 });
 
 test('clasifica la asistencia como presente cuando la marcación está dentro del margen de tolerancia', () => {

@@ -81,6 +81,64 @@ export function validateSchedule({ newSchedule, existingSchedules = [], maxCours
   };
 }
 
+export async function saveSchedule({
+  newSchedule,
+  existingSchedules = [],
+  maxCourses = 5,
+  persist = false,
+  onPersist
+}) {
+  const validation = validateSchedule({
+    newSchedule,
+    existingSchedules,
+    maxCourses
+  });
+
+  if (!validation.isValid) {
+    return {
+      success: false,
+      message: 'No se puede guardar el horario.',
+      errors: validation.errors
+    };
+  }
+
+  if (!persist) {
+    return {
+      success: true,
+      message: 'Horario válido y listo para guardar.',
+      data: {
+        newSchedule,
+        existingSchedules,
+        maxCourses
+      }
+    };
+  }
+
+  if (typeof onPersist !== 'function') {
+    return {
+      success: false,
+      message: 'No se ha proporcionado un handler de persistencia.',
+      errors: ['No se ha proporcionado un handler de persistencia.']
+    };
+  }
+
+  try {
+    const persistedData = await onPersist({ newSchedule, existingSchedules, maxCourses });
+
+    return {
+      success: true,
+      message: 'Horario guardado correctamente.',
+      data: persistedData
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: 'No se pudo guardar el horario en la base de datos.',
+      errors: [error.message || 'Error inesperado al guardar el horario.']
+    };
+  }
+}
+
 export function evaluateAttendanceStatus({ markedAt, officialStart, toleranceMinutes = 10 }) {
   const normalizedTolerance = Number(toleranceMinutes) || 0;
   const markedDate = new Date(markedAt);
