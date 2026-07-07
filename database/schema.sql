@@ -116,6 +116,58 @@ CREATE INDEX idx_justifications_course_id ON justifications(course_id);
 CREATE INDEX idx_reports_course_id ON attendance_reports(course_id);
 CREATE INDEX idx_reports_student_id ON attendance_reports(student_id);
 
+-- Restricción de negocio: un docente no puede tener más de 5 cursos activos
+CREATE OR REPLACE FUNCTION enforce_professor_course_limit()
+RETURNS TRIGGER AS $$
+DECLARE
+    course_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO course_count
+    FROM courses
+    WHERE professor_id = NEW.professor_id;
+
+    IF course_count >= 5 THEN
+        RAISE EXCEPTION 'Un docente no puede tener más de 5 cursos.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_enforce_professor_course_limit
+BEFORE INSERT OR UPDATE OF professor_id ON courses
+FOR EACH ROW
+EXECUTE FUNCTION enforce_professor_course_limit();
+
+-- Restricción de negocio: evitar cruces de horarios para un mismo docente en el mismo día
+CREATE OR REPLACE FUNCTION enforce_no_schedule_overlap()
+RETURNS TRIGGER AS $$
+DECLARE
+    overlap_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO overlap_count
+    FROM courses c
+    JOIN sessions s ON s.course_id = c.id
+    WHERE c.professor_id = (
+        SELECT professor_id FROM courses WHERE id = NEW.course_id
+    )
+      AND s.session_date = NEW.session_date
+      AND s.session_time < NEW.session_time + INTERVAL '1 hour'
+      AND s.session_time + INTERVAL '1 hour' > NEW.session_time;
+
+    IF overlap_count > 0 THEN
+        RAISE EXCEPTION 'Hay un cruce de horarios en el mismo día.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_enforce_no_schedule_overlap
+BEFORE INSERT OR UPDATE OF session_date, session_time ON sessions
+FOR EACH ROW
+EXECUTE FUNCTION enforce_no_schedule_overlap();
+
 -- Crear usuario administrativo por defecto (opcional)
 -- Password debe ser hasheada en la aplicación
 -- INSERT INTO users (name, email, password_hash, role) 
