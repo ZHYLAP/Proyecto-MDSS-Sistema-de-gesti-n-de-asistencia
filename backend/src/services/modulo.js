@@ -80,3 +80,45 @@ export function validateSchedule({ newSchedule, existingSchedules = [], maxCours
     errors
   };
 }
+
+export function evaluateAttendanceStatus({ markedAt, officialStart, toleranceMinutes = 10 }) {
+  const normalizedTolerance = Number(toleranceMinutes) || 0;
+  const markedDate = new Date(markedAt);
+  const officialDate = new Date(officialStart);
+
+  if (Number.isNaN(markedDate.getTime()) || Number.isNaN(officialDate.getTime())) {
+    return {
+      isAllowed: false,
+      status: 'rechazado',
+      differenceMinutes: null,
+      message: 'Las fechas de marcación e inicio oficial no son válidas.'
+    };
+  }
+
+  const differenceMinutes = Math.round((markedDate.getTime() - officialDate.getTime()) / 60000);
+
+  if (differenceMinutes < 0) {
+    return {
+      isAllowed: false,
+      status: 'rechazado',
+      differenceMinutes,
+      message: 'La marcación es anterior al inicio oficial de la sesión.'
+    };
+  }
+
+  if (differenceMinutes <= normalizedTolerance) {
+    return {
+      isAllowed: true,
+      status: 'presente',
+      differenceMinutes,
+      message: 'Marcación dentro del rango de tolerancia.'
+    };
+  }
+
+  return {
+    isAllowed: true,
+    status: 'tardanza',
+    differenceMinutes,
+    message: 'La marcación supera el margen de tolerancia.'
+  };
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateSchedule } from '../src/services/modulo.js';
+import { validateSchedule, evaluateAttendanceStatus } from '../src/services/modulo.js';
 
 test('permite guardar un horario cuando no hay cruce y hay menos de 5 cursos', () => {
   const result = validateSchedule({
@@ -44,4 +44,40 @@ test('rechaza un horario cuando supera el límite de 5 cursos', () => {
 
   assert.equal(result.isValid, false);
   assert.match(result.errors.join(' '), /5 cursos/i);
+});
+
+test('clasifica la asistencia como presente cuando la marcación está dentro del margen de tolerancia', () => {
+  const result = evaluateAttendanceStatus({
+    markedAt: '2026-07-07T08:05:00',
+    officialStart: '2026-07-07T08:00:00',
+    toleranceMinutes: 10
+  });
+
+  assert.equal(result.isAllowed, true);
+  assert.equal(result.status, 'presente');
+  assert.equal(result.differenceMinutes, 5);
+});
+
+test('clasifica como tardanza cuando la marcación excede el margen de tolerancia', () => {
+  const result = evaluateAttendanceStatus({
+    markedAt: '2026-07-07T08:16:00',
+    officialStart: '2026-07-07T08:00:00',
+    toleranceMinutes: 10
+  });
+
+  assert.equal(result.isAllowed, true);
+  assert.equal(result.status, 'tardanza');
+  assert.equal(result.differenceMinutes, 16);
+});
+
+test('niega la asistencia cuando la marcación es demasiado anticipada', () => {
+  const result = evaluateAttendanceStatus({
+    markedAt: '2026-07-07T07:40:00',
+    officialStart: '2026-07-07T08:00:00',
+    toleranceMinutes: 10
+  });
+
+  assert.equal(result.isAllowed, false);
+  assert.equal(result.status, 'rechazado');
+  assert.equal(result.differenceMinutes, -20);
 });
