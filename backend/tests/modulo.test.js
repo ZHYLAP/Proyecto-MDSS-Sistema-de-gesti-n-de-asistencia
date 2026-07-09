@@ -85,38 +85,54 @@ test('rechaza el guardado cuando la validación falla incluso si se intenta pers
   assert.match(result.errors.join(' '), /cruce/i);
 });
 
-test('clasifica la asistencia como presente cuando la marcación está dentro del margen de tolerancia', () => {
-  const result = evaluateAttendanceStatus({
-    markedAt: '2026-07-07T08:05:00',
-    officialStart: '2026-07-07T08:00:00',
-    toleranceMinutes: 10
+test('aplica la matriz de casos para bloquear asistencia fuera de los márgenes de 15/10 minutos', () => {
+  const cases = [
+    {
+      name: 'permite marcar a tiempo',
+      markedAt: '2026-07-07T08:00:00',
+      officialStart: '2026-07-07T08:00:00',
+      expectedAllowed: true,
+      expectedStatus: 'presente'
+    },
+    {
+      name: 'permite marcar 10 minutos tarde',
+      markedAt: '2026-07-07T08:10:00',
+      officialStart: '2026-07-07T08:00:00',
+      expectedAllowed: true,
+      expectedStatus: 'presente'
+    },
+    {
+      name: 'permite marcar 15 minutos temprano',
+      markedAt: '2026-07-07T07:45:00',
+      officialStart: '2026-07-07T08:00:00',
+      expectedAllowed: true,
+      expectedStatus: 'presente'
+    },
+    {
+      name: 'bloquea cuando se marca 16 minutos temprano',
+      markedAt: '2026-07-07T07:44:00',
+      officialStart: '2026-07-07T08:00:00',
+      expectedAllowed: false,
+      expectedStatus: 'rechazado'
+    },
+    {
+      name: 'bloquea cuando se marca 11 minutos tarde',
+      markedAt: '2026-07-07T08:11:00',
+      officialStart: '2026-07-07T08:00:00',
+      expectedAllowed: false,
+      expectedStatus: 'rechazado'
+    }
+  ];
+
+  cases.forEach(({ name, markedAt, officialStart, expectedAllowed, expectedStatus }) => {
+    const result = evaluateAttendanceStatus({
+      markedAt,
+      officialStart,
+      earlyToleranceMinutes: 15,
+      lateToleranceMinutes: 10
+    });
+
+    assert.equal(result.isAllowed, expectedAllowed, name);
+    assert.equal(result.status, expectedStatus, name);
   });
-
-  assert.equal(result.isAllowed, true);
-  assert.equal(result.status, 'presente');
-  assert.equal(result.differenceMinutes, 5);
-});
-
-test('clasifica como tardanza cuando la marcación excede el margen de tolerancia', () => {
-  const result = evaluateAttendanceStatus({
-    markedAt: '2026-07-07T08:16:00',
-    officialStart: '2026-07-07T08:00:00',
-    toleranceMinutes: 10
-  });
-
-  assert.equal(result.isAllowed, true);
-  assert.equal(result.status, 'tardanza');
-  assert.equal(result.differenceMinutes, 16);
-});
-
-test('niega la asistencia cuando la marcación es demasiado anticipada', () => {
-  const result = evaluateAttendanceStatus({
-    markedAt: '2026-07-07T07:40:00',
-    officialStart: '2026-07-07T08:00:00',
-    toleranceMinutes: 10
-  });
-
-  assert.equal(result.isAllowed, false);
-  assert.equal(result.status, 'rechazado');
-  assert.equal(result.differenceMinutes, -20);
 });
