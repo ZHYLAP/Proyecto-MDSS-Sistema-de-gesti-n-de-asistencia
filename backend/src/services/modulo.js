@@ -218,3 +218,4 @@ export function evaluateAttendanceStatus({
     message: 'La marcación supera el margen de tolerancia tardía.'
   };
 }
+// prueba 
