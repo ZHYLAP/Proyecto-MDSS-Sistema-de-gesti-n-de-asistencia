@@ -50,7 +50,9 @@ function createMockAdapter() {
 }
 
 async function createExternalAdapter() {
-  const modulePath = process.env.BIOMETRIC_ADAPTER_MODULE || process.env.BIOMETRIC_SDK_MODULE;
+  const modulePath = process.env.BIOMETRIC_ADAPTER_MODULE
+    || process.env.BIOMETRIC_SDK_MODULE
+    || './src/services/biometricAdapter.js';
 
   if (!modulePath) {
     return createMockAdapter();
