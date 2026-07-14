@@ -1,0 +1,90 @@
+/* Tarea 67 - Perfil del docente: historial de asistencia.
+   Prefijo "pd-" para evitar colisiones con otras tareas. */
+
+.pd-page * { box-sizing: border-box; }
+.pd-page { font-family: 'Inter', sans-serif; background: #fafaf7; color: #1f1e1c; width: 1280px; margin: 0 auto; position: relative; overflow: hidden; min-height: 940px; }
+
+/* MARCA DE AGUA */
+.pd-watermark {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center bottom; background-repeat: no-repeat;
+  opacity: 0.08; filter: blur(2px) saturate(0.7);
+  pointer-events: none; z-index: 0;
+}
+.pd-page > *:not(.pd-watermark) { position: relative; z-index: 1; }
+
+/* TOP BAR AZUL */
+.pd-topbar { background: linear-gradient(135deg, #0a3b7a 0%, #1864c2 100%); padding: 14px 32px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+.pd-topbar-left { display: flex; align-items: center; gap: 14px; }
+.pd-logo { height: 40px; width: auto; object-fit: contain; background: rgba(255,255,255,0.9); border-radius: 8px; padding: 4px; }
+.pd-topbar-text { line-height: 1.35; }
+.pd-topbar-title { font-size: 14px; font-weight: 700; }
+.pd-topbar-sub { font-size: 11px; opacity: 0.85; }
+.pd-topbar-user { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.pd-topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+
+/* CONTENT */
+.pd-content { padding: 28px 40px; }
+
+/* PROFILE HEADER */
+.pd-profile-header { background: rgba(255,255,255,0.96); border: 1px solid #e6e3da; border-radius: 12px; padding: 24px 28px; margin-bottom: 16px; display: flex; align-items: center; gap: 20px; backdrop-filter: blur(4px); }
+.pd-profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #185fa5 0%, #1864c2 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0; }
+.pd-profile-info { flex: 1; }
+.pd-profile-name { font-size: 22px; font-weight: 700; color: #1f1e1c; margin-bottom: 4px; }
+.pd-profile-meta { font-size: 13px; color: #5f5e5a; display: flex; gap: 16px; flex-wrap: wrap; }
+.pd-profile-meta span { display: flex; align-items: center; gap: 5px; }
+.pd-profile-period { text-align: right; }
+.pd-profile-period-label { font-size: 11px; color: #888780; text-transform: uppercase; letter-spacing: 0.5px; }
+.pd-profile-period-value { font-size: 16px; font-weight: 600; color: #185fa5; }
+
+.pd-meta-ico { width: 14px; height: 14px; background: #888780; mask-size: contain; -webkit-mask-size: contain; mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat; display: inline-block; }
+.pd-ico-id { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='5' width='18' height='14' rx='2'/><circle cx='9' cy='12' r='2'/><line x1='14' y1='10' x2='18' y2='10'/><line x1='14' y1='14' x2='18' y2='14'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='5' width='18' height='14' rx='2'/><circle cx='9' cy='12' r='2'/><line x1='14' y1='10' x2='18' y2='10'/><line x1='14' y1='14' x2='18' y2='14'/></svg>"); }
+.pd-ico-building { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='4' y='3' width='16' height='18' rx='1'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='4' y='3' width='16' height='18' rx='1'/></svg>"); }
+.pd-ico-mail { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='5' width='18' height='14' rx='2'/><polyline points='3 7 12 13 21 7'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='5' width='18' height='14' rx='2'/><polyline points='3 7 12 13 21 7'/></svg>"); }
+
+/* STATS ROW */
+.pd-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+.pd-stat-card { background: rgba(255,255,255,0.96); border: 1px solid #e6e3da; border-radius: 12px; padding: 20px; backdrop-filter: blur(4px); }
+.pd-stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pd-stat-label { font-size: 12px; color: #5f5e5a; font-weight: 500; }
+.pd-stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.pd-stat-icon-svg { width: 20px; height: 20px; mask-size: contain; -webkit-mask-size: contain; mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat; }
+.pd-stat-icon.success { background: #e1f5ee; } .pd-stat-icon.success .pd-stat-icon-svg { background: #0f6e56; }
+.pd-stat-icon.warning { background: #faeeda; } .pd-stat-icon.warning .pd-stat-icon-svg { background: #854f0b; }
+.pd-stat-icon.danger { background: #fcebeb; } .pd-stat-icon.danger .pd-stat-icon-svg { background: #a32d2d; }
+.pd-stat-icon.info { background: #e6f1fb; } .pd-stat-icon.info .pd-stat-icon-svg { background: #185fa5; }
+.pd-stat-value { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.pd-stat-value.success { color: #0f6e56; } .pd-stat-value.warning { color: #854f0b; } .pd-stat-value.danger { color: #a32d2d; } .pd-stat-value.info { color: #185fa5; }
+.pd-stat-sub { font-size: 12px; color: #888780; }
+
+.pd-ico-check { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'><polyline points='20 6 9 17 4 12'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'><polyline points='20 6 9 17 4 12'/></svg>"); }
+.pd-ico-clock { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><circle cx='12' cy='12' r='9'/><polyline points='12 7 12 12 15 14'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><circle cx='12' cy='12' r='9'/><polyline points='12 7 12 12 15 14'/></svg>"); }
+.pd-ico-x { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>"); }
+.pd-ico-percent { mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><line x1='19' y1='5' x2='5' y2='19'/><circle cx='6.5' cy='6.5' r='2.5'/><circle cx='17.5' cy='17.5' r='2.5'/></svg>"); -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><line x1='19' y1='5' x2='5' y2='19'/><circle cx='6.5' cy='6.5' r='2.5'/><circle cx='17.5' cy='17.5' r='2.5'/></svg>"); }
+
+/* HISTORIAL */
+.pd-history-card { background: rgba(255,255,255,0.96); border: 1px solid #e6e3da; border-radius: 12px; padding: 24px; backdrop-filter: blur(4px); }
+.pd-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.pd-history-title { font-size: 16px; font-weight: 600; color: #1f1e1c; }
+.pd-history-filters { display: flex; gap: 10px; }
+.pd-filter-select { height: 36px; padding: 0 32px 0 12px; border: 1px solid #e6e3da; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1f1e1c; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; }
+
+.pd-history-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #e6e3da; }
+.pd-history-tab { padding: 8px 16px; font-size: 13px; color: #5f5e5a; cursor: pointer; border-bottom: 2px solid transparent; }
+.pd-history-tab.active { color: #185fa5; font-weight: 600; border-bottom-color: #185fa5; }
+
+.pd-history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pd-history-table thead th { text-align: left; padding: 10px 12px; color: #5f5e5a; font-weight: 500; border-bottom: 1px solid #e6e3da; font-size: 11px; letter-spacing: 0.3px; text-transform: uppercase; }
+.pd-history-table tbody td { padding: 12px; border-bottom: 1px solid #efece4; }
+.pd-history-table tbody tr:last-child td { border-bottom: none; }
+.pd-date-cell { font-weight: 500; }
+.pd-date-sub { font-size: 11px; color: #888780; }
+
+.pd-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+.pd-badge.success { background: #e1f5ee; color: #0d6c54; }
+.pd-badge.warning { background: #faeeda; color: #7d4a09; }
+.pd-badge.danger { background: #fcebeb; color: #a32d2d; }
+.pd-badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+.pd-badge.success .pd-badge-dot { background: #0d6c54; }
+.pd-badge.warning .pd-badge-dot { background: #7d4a09; }
+.pd-badge.danger .pd-badge-dot { background: #a32d2d; }
