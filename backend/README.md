@@ -117,6 +117,20 @@ O usar docker-compose desde la raíz del proyecto.
 - `JWT_SECRET` - Clave secreta para JWT
 - `DB_*` - Credenciales de la base de datos
 - `CORS_ORIGIN` - Origen permitido para CORS
+- `BIOMETRIC_MODE` - `mock` o `sdk`, para activar el adaptador biométrico
+- `BIOMETRIC_ADAPTER_MODULE` - Ruta al módulo del SDK o adaptador biométrico
+- `BIOMETRIC_DEVICE_ID` - Identificador del lector biométrico
+- `BIOMETRIC_TIMEOUT_MS` - Tiempo máximo de espera para captura biométrica
+
+## API Endpoints
+
+### Biometría
+- `GET /api/biometric/status` - Obtener estado del lector biométrico
+- `POST /api/biometric/capture` - Capturar una huella dactilar
+- `POST /api/biometric/verify` - Verificar una huella contra una plantilla
+
+### Health Check
+- `GET /api/health` - Verificar estado del servidor
 
 ## Licencia
 
