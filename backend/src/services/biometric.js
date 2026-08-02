@@ -1,8 +1,10 @@
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import crypto from 'node:crypto';
 
 const DEFAULT_DEVICE_ID = process.env.BIOMETRIC_DEVICE_ID || 'mock-reader';
 const DEFAULT_TIMEOUT_MS = Number(process.env.BIOMETRIC_TIMEOUT_MS || 10000);
+const BIOMETRIC_SECRET = process.env.BIOMETRIC_SECRET || process.env.JWT_SECRET || 'biometric-secret';
 
 function createMockAdapter() {
   return {
@@ -97,6 +99,16 @@ async function createExternalAdapter() {
     console.warn('No se pudo cargar el adaptador biométrico externo, se usará el modo simulado.', error.message);
     return createMockAdapter();
   }
+}
+
+export function hashFingerprintTemplate(template) {
+  if (!template || typeof template !== 'string') {
+    throw new Error('La plantilla biométrica debe ser una cadena de texto válida.');
+  }
+
+  const hmac = crypto.createHmac('sha256', BIOMETRIC_SECRET);
+  hmac.update(template);
+  return hmac.digest('hex');
 }
 
 export async function createBiometricService({ adapter } = {}) {

@@ -73,6 +73,15 @@ CREATE TABLE attendance (
     UNIQUE(session_id, student_id)
 );
 
+-- Tabla de huellas biométricas
+CREATE TABLE fingerprints (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    template_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabla de justificantes
 CREATE TABLE justifications (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

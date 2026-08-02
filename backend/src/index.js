@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import scheduleRoutes from './routes/schedules.js';
 import biometricRoutes from './routes/biometric.js';
+import attendanceRoutes from './routes/attendance.js';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get('/api', (req, res) => {
 
 app.use('/api', scheduleRoutes);
 app.use('/api', biometricRoutes);
+app.use('/api', attendanceRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
