@@ -59,11 +59,19 @@ export default function RegistrarDocente() {
         setMensaje('Docente registrado correctamente.')
       } else {
         setGuardado(false)
-        setMensaje('No se pudo guardar el docente.')
+        const errMsg = response.data?.error || 'No se pudo guardar el docente.'
+        setMensaje(errMsg)
       }
     } catch (error) {
       setGuardado(false)
-      setMensaje('No se pudo conectar con el backend. Intenta más tarde.')
+      // Show server-provided error if present
+      if (error?.response?.data?.error) {
+        setMensaje(error.response.data.error)
+      } else if (error?.response?.status === 409) {
+        setMensaje('El correo ya está registrado.')
+      } else {
+        setMensaje('No se pudo conectar con el backend. Intenta más tarde.')
+      }
     } finally {
       setCargando(false)
     }

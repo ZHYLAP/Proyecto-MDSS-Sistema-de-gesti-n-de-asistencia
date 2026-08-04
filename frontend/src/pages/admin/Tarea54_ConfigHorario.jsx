@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CONFIG_INSTITUCIONAL } from '../../data.js'
+import { api } from '../../services/api.js'
 
 const DIAS = [
   { l: 'L', nombre: 'Lunes' }, { l: 'M', nombre: 'Martes' }, { l: 'X', nombre: 'Miércoles' },
@@ -12,6 +13,20 @@ export default function ConfigHorario() {
   const [horaTope, setHoraTope] = useState(CONFIG_INSTITUCIONAL.horaTope)
   const [dias, setDias] = useState(new Set(CONFIG_INSTITUCIONAL.diasHabiles))
   const [feriados, setFeriados] = useState(['28 jul — Fiestas Patrias', '29 jul — Fiestas Patrias'])
+  const [editingIndex, setEditingIndex] = useState(-1)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    api.get('/config').then((r) => {
+      if (!mounted) return
+      const c = r.data || {}
+      if (c.horaTope) setHoraTope(c.horaTope)
+      if (c.diasHabiles) setDias(new Set(c.diasHabiles))
+      if (c.feriados) setFeriados(c.feriados)
+    }).catch(() => {})
+    return () => { mounted = false }
+  }, [])
 
   const toggleDia = (l) => {
     const s = new Set(dias)
@@ -65,16 +80,29 @@ export default function ConfigHorario() {
         <div className="row wrap">
           {feriados.map((f, i) => (
             <span key={i} className="app-chip">
-              {f}
-              <span style={{ cursor: 'pointer', marginLeft: 4 }} onClick={() => setFeriados(feriados.filter((_, j) => j !== i))}>×</span>
+              {editingIndex === i ? (
+                <input value={f} onChange={(e) => setFeriados(feriados.map((v, idx) => idx === i ? e.target.value : v))} onBlur={() => setEditingIndex(-1)} autoFocus />
+              ) : (
+                <span onDoubleClick={() => setEditingIndex(i)}>{f}</span>
+              )}
+              <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => setFeriados(feriados.filter((_, j) => j !== i))}>×</span>
             </span>
           ))}
-          <button className="app-btn ghost sm" onClick={() => setFeriados([...feriados, 'Nuevo feriado'])}>+ Agregar</button>
+          <button className="app-btn ghost sm" onClick={() => { setFeriados([...feriados, '']); setEditingIndex(feriados.length) }}>+ Agregar</button>
         </div>
       </div>
 
       <div className="row end mt24">
-        <button className="app-btn">Guardar configuración</button>
+        <button className="app-btn" disabled={saving} onClick={async () => {
+          setSaving(true)
+          try {
+            await api.post('/config', { horaTope, diasHabiles: Array.from(dias), feriados })
+            alert('Configuración guardada')
+          } catch (e) {
+            console.error(e)
+            alert('Error guardando configuración')
+          } finally { setSaving(false) }
+        }}>{saving ? 'Guardando...' : 'Guardar configuración'}</button>
       </div>
     </>
   )

@@ -14,6 +14,7 @@ function iniciales(nombre) {
 
 export default function EstacionCentral({ escenario, duracion = 12, onClose }) {
   const [count, setCount] = useState(duracion)
+  const [manual, setManual] = useState(false)
   const docente = escenario.docente ? getDocente(escenario.docente) : null
 
   useEffect(() => {
@@ -79,6 +80,12 @@ export default function EstacionCentral({ escenario, duracion = 12, onClose }) {
               {escenario.detectado && (
                 <div className="e-detected">{Icon.clock({ width: 16, height: 16 })} Curso detectado según horario · resaltado arriba</div>
               )}
+              <div className="mt16" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <button className="app-btn ghost sm" onClick={() => setManual(true)}>
+                  {Icon.check({ width: 16, height: 16 })} Marcar asistencia manualmente
+                </button>
+                {manual && <span className="app-badge ok">Asistencia registrada manualmente</span>}
+              </div>
             </div>
           </div>
         ) : (

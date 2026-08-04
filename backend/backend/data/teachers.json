@@ -1,0 +1,30 @@
+[
+  {
+    "id": "local-1785808803146",
+    "name": "dadsa",
+    "email": "dasddas",
+    "role": "profesor",
+    "created_at": "2026-08-04T02:00:03.146Z"
+  },
+  {
+    "id": "local-1785808833079",
+    "name": "Juan Pérez",
+    "email": "juan.perez@example.com",
+    "role": "profesor",
+    "created_at": "2026-08-04T02:00:33.079Z"
+  },
+  {
+    "id": "local-1785808947077",
+    "name": "a",
+    "email": "a",
+    "role": "profesor",
+    "created_at": "2026-08-04T02:02:27.077Z"
+  },
+  {
+    "id": "local-1785809414506",
+    "name": "margaret zavala",
+    "email": "ncajsksnas",
+    "role": "profesor",
+    "created_at": "2026-08-04T02:10:14.506Z"
+  }
+]

@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Icon } from '../../icons.jsx'
 import { ESCENARIOS } from '../../data.js'
+import { api } from '../../services/api.js'
 
 // Panel de la Estación de Marcación (lado derecho del login).
 // Muestra el sensor y, en modo demo, los botones para simular cada caso.
@@ -7,6 +9,29 @@ const TONO_CLASE = { ok: 'sim-ok', warn: 'sim-warn', bad: 'sim-bad' }
 
 export default function SensorPanel({ estado, onSimular }) {
   const claseDisc = estado === 'leyendo' ? 'is-leyendo' : ''
+  const [manualOpen, setManualOpen] = useState(false)
+  const [codigo, setCodigo] = useState('')
+  const [password, setPassword] = useState('')
+  const [msg, setMsg] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const marcarManual = async () => {
+    if (!codigo || !password) {
+      setMsg('Ingresa código y contraseña para marcar.')
+      return
+    }
+    setLoading(true)
+    setMsg('')
+    try {
+      const res = await api.post('/attendance', { codigo, password, tipo: 'manual' })
+      if (res.data?.ok) setMsg('Asistencia registrada correctamente (manual).')
+      else setMsg(res.data?.error || 'No se pudo registrar la asistencia')
+    } catch (err) {
+      setMsg('Error de conexión con el backend.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="sensor-card">
@@ -41,7 +66,20 @@ export default function SensorPanel({ estado, onSimular }) {
             </button>
           ))}
         </div>
+        <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button className="app-btn ghost sm" onClick={() => setManualOpen((v) => !v)}>
+            {Icon.check({ width: 14, height: 14 })} Marcar asistencia manualmente
+          </button>
+          {manualOpen && (
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input className="app-input" style={{ width: 120 }} placeholder="Código" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
+              <input className="app-input" style={{ width: 140 }} placeholder="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <button className="app-btn" onClick={marcarManual} disabled={loading}>{loading ? 'Enviando...' : 'Marcar'}</button>
+            </div>
+          )}
+        </div>
         <div className="sim-note">Estos botones se retirarán al conectar el sensor físico.</div>
+        {msg && <div style={{ marginTop: 8 }} className="muted">{msg}</div>}
       </div>
     </div>
   )

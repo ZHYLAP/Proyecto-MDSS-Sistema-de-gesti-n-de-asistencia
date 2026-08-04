@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TOLERANCIA } from '../../data.js'
+import { api } from '../../services/api.js'
 
 // Tarea 59 — Tolerancia de marcación.
 // Entrada: −15 / +10 (pasado el +10 NO registra, sin tardanza). Salida: −10 / +15 (permisiva).
@@ -58,7 +59,17 @@ export default function Tolerancia() {
         </table>
       </div>
 
-      <div className="row end mt24"><button className="app-btn">Guardar tolerancia</button></div>
+      <div className="row end mt24">
+        <button className="app-btn" onClick={async () => {
+          try {
+            await api.post('/tolerance', t)
+            alert('Tolerancia guardada')
+          } catch (e) {
+            console.error(e)
+            alert('Error guardando tolerancia')
+          }
+        }}>Guardar tolerancia</button>
+      </div>
     </>
   )
 }
