@@ -1,8 +1,11 @@
+// Rutas de integración con dispositivos biométricos.
+// Permiten consultar el estado del lector, capturar una huella y verificarla.
 import express from 'express';
 import { createBiometricService } from '../services/biometric.js';
 
 const router = express.Router();
 
+// Devuelve el estado del lector biométrico o del modo simulado configurado.
 router.get('/biometric/status', async (req, res) => {
   try {
     const service = await createBiometricService();
@@ -13,6 +16,7 @@ router.get('/biometric/status', async (req, res) => {
   }
 });
 
+// Captura una huella a través del servicio biométrico y devuelve el resultado.
 router.post('/biometric/capture', async (req, res) => {
   try {
     const service = await createBiometricService();
@@ -23,6 +27,7 @@ router.post('/biometric/capture', async (req, res) => {
   }
 });
 
+// Verifica si una plantilla capturada coincide con un perfil preexistente.
 router.post('/biometric/verify', async (req, res) => {
   try {
     const service = await createBiometricService();

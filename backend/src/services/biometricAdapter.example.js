@@ -1,3 +1,5 @@
+// Ejemplo de adaptador biométrico externo.
+// Este archivo muestra la forma de un adaptador que podría reemplazar al mock en producción.
 export default async function createBiometricAdapter({ deviceId, timeoutMs }) {
   return {
     async connect() {
@@ -5,7 +7,7 @@ export default async function createBiometricAdapter({ deviceId, timeoutMs }) {
         connected: true,
         deviceId,
         status: 'ready',
-        mode: 'external',
+        mode: 'external',   
         message: 'Listo para usar el SDK o driver de tu lector.'
       };
     },

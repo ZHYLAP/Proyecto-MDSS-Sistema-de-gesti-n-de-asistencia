@@ -1,3 +1,5 @@
+// Adaptador biométrico externo de ejemplo.
+// Sirve como punto de integración para reemplazarlo por un SDK o driver real del lector.
 const DEFAULT_DEVICE_ID = process.env.BIOMETRIC_DEVICE_ID || 'external-reader';
 const DEFAULT_TIMEOUT_MS = Number(process.env.BIOMETRIC_TIMEOUT_MS || 10000);
 

@@ -1,3 +1,5 @@
+// Servicio de abstracción para el lector biométrico.
+// Permite trabajar con un adaptador simulado o con un adaptador externo sin cambiar la API del backend.
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import crypto from 'node:crypto';
@@ -6,6 +8,7 @@ const DEFAULT_DEVICE_ID = process.env.BIOMETRIC_DEVICE_ID || 'mock-reader';
 const DEFAULT_TIMEOUT_MS = Number(process.env.BIOMETRIC_TIMEOUT_MS || 10000);
 const BIOMETRIC_SECRET = process.env.BIOMETRIC_SECRET || process.env.JWT_SECRET || 'biometric-secret';
 
+// Crea un adaptador simulado para pruebas o entornos sin hardware real.
 function createMockAdapter() {
   return {
     async connect({ deviceId = DEFAULT_DEVICE_ID } = {}) {
@@ -51,6 +54,7 @@ function createMockAdapter() {
   };
 }
 
+// Carga un adaptador biométrico externo desde un módulo configurable.
 async function createExternalAdapter() {
   const modulePath = process.env.BIOMETRIC_ADAPTER_MODULE
     || process.env.BIOMETRIC_SDK_MODULE
@@ -101,6 +105,7 @@ async function createExternalAdapter() {
   }
 }
 
+// Genera un hash seguro de una plantilla biométrica para almacenar una representación no reversible.
 export function hashFingerprintTemplate(template) {
   if (!template || typeof template !== 'string') {
     throw new Error('La plantilla biométrica debe ser una cadena de texto válida.');
@@ -111,6 +116,7 @@ export function hashFingerprintTemplate(template) {
   return hmac.digest('hex');
 }
 
+// Crea un servicio con una interfaz uniforme para conectar, capturar, verificar y consultar un lector biométrico.
 export async function createBiometricService({ adapter } = {}) {
   const activeAdapter = adapter || (process.env.BIOMETRIC_MODE === 'sdk' ? await createExternalAdapter() : createMockAdapter());
 

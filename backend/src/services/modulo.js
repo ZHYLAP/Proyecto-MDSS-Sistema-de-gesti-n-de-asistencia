@@ -1,3 +1,6 @@
+// Módulo de utilidades para la validación de horarios y reglas de asistencia.
+// Aquí se centralizan las funciones que permiten comprobar si un horario es válido y si una marcación es aceptable.
+
 // Normaliza una hora recibida como texto para dejarla en formato HH:MM.
 const normalizeTime = (value) => {
   if (typeof value !== 'string') {
@@ -217,5 +220,4 @@ export function evaluateAttendanceStatus({
     differenceMinutes,
     message: 'La marcación supera el margen de tolerancia tardía.'
   };
-}
-// prueba 
+};

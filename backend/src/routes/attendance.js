@@ -1,3 +1,5 @@
+// Rutas relacionadas con la captura y consulta de asistencia.
+// Exponen los endpoints HTTP que el frontend usa para registrar marcaciones y exportar reportes.
 import express from 'express';
 import {
   captureAndSaveFingerprintProfile,
@@ -9,6 +11,7 @@ import {
 
 const router = express.Router();
 
+// Registra una plantilla biométrica para un usuario y la guarda en el sistema.
 router.post('/attendance/fingerprint', async (req, res) => {
   try {
     const { userId, deviceId, timeoutMs } = req.body || {};
@@ -19,6 +22,7 @@ router.post('/attendance/fingerprint', async (req, res) => {
   }
 });
 
+// Marca la asistencia de un estudiante o docente usando la lógica de negocio del servicio.
 router.post('/attendance/mark', async (req, res) => {
   try {
     const {
@@ -43,6 +47,7 @@ router.post('/attendance/mark', async (req, res) => {
   }
 });
 
+// Verifica si un docente ya registró asistencia para una sesión y fecha determinadas.
 router.get('/attendance/teacher/verify', async (req, res) => {
   try {
     const { teacherId, courseId, referenceDate } = req.query || {};
@@ -57,6 +62,7 @@ router.get('/attendance/teacher/verify', async (req, res) => {
   }
 });
 
+// Exporta el reporte de asistencia de un curso a formato Excel.
 router.get('/attendance/export/excel/:courseId', async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -70,6 +76,7 @@ router.get('/attendance/export/excel/:courseId', async (req, res) => {
   }
 });
 
+// Exporta el reporte de asistencia de un curso a formato PDF.
 router.get('/attendance/export/pdf/:courseId', async (req, res) => {
   try {
     const { courseId } = req.params;
