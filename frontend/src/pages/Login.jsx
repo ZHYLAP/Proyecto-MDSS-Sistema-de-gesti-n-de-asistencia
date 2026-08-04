@@ -5,6 +5,7 @@ import EstacionCentral from './shared/EstacionCentral.jsx'
 import logoEpiis from '../assets/logo-epiis.png'
 import logoUnsaac from '../assets/logo-unsaac.png'
 import { CREDENCIALES } from '../data.js'
+import { api } from '../services/api.js'
 
 export default function Login({ onLogin }) {
   const [codigo, setCodigo] = useState('')
@@ -17,13 +18,25 @@ export default function Login({ onLogin }) {
   const timer = useRef(null)
   useEffect(() => () => clearTimeout(timer.current), [])
 
-  const entrar = () => {
+  const entrar = async () => {
     const cred = CREDENCIALES[codigo.trim()]
     if (cred && cred.pass === pass) {
       setError('')
       onLogin({ role: cred.role, nombre: cred.nombre, codigo: cred.codigo })
-    } else {
-      setError('Código o contraseña incorrectos.')
+      return
+    }
+
+    try {
+      const response = await api.post('/auth/login', { codigo: codigo.trim(), password: pass })
+      const user = response.data?.user
+      if (user) {
+        setError('')
+        onLogin({ role: user.role, nombre: user.nombre, codigo: user.codigo })
+      } else {
+        setError('Código o contraseña incorrectos.')
+      }
+    } catch (err) {
+      setError('No se pudo conectar con el backend. Intente con las credenciales demo.')
     }
   }
 

@@ -1,19 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Icon } from '../../icons.jsx'
 import { REPORTE_FILAS } from '../../data.js'
+import { exportReport } from '../../utils/reportExport.js'
+import { api } from '../../services/api.js'
 
 // Tarea 75 — Reportería. Filtros + exportación PDF / Excel / CSV.
 export default function Reporteria() {
   const [tipo, setTipo] = useState('todos')
   const [aviso, setAviso] = useState('')
+  const [filas, setFilas] = useState(REPORTE_FILAS)
 
-  const filas = REPORTE_FILAS.filter((r) =>
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const response = await api.get('/reports')
+        if (Array.isArray(response.data)) {
+          setFilas(response.data)
+        }
+      } catch (err) {
+        setFilas(REPORTE_FILAS)
+      }
+    }
+
+    cargar()
+  }, [])
+
+  const filasFiltradas = filas.filter((r) =>
     tipo === 'todos' ? true : tipo === 'inst' ? r.tipo === 'Institucional' : r.tipo === 'Curso'
   )
 
   const exportar = (fmt) => {
-    setAviso(`Generando reporte en ${fmt}… (demo)`)
-    setTimeout(() => setAviso(''), 2500)
+    const ok = exportReport(filasFiltradas, fmt)
+    if (ok) {
+      setAviso(`Reporte ${fmt} listo para descargar.`)
+      setTimeout(() => setAviso(''), 2500)
+    } else {
+      setAviso('No hay datos para exportar.')
+      setTimeout(() => setAviso(''), 2500)
+    }
   }
 
   return (
@@ -55,7 +79,7 @@ export default function Reporteria() {
         <table className="app-table">
           <thead><tr><th>Fecha</th><th>Docente</th><th>Curso</th><th>Tipo</th><th>Hora</th><th>Estado</th></tr></thead>
           <tbody>
-            {filas.map((r, i) => (
+            {filasFiltradas.map((r, i) => (
               <tr key={i}>
                 <td>{r.fecha}</td><td>{r.docente}</td><td>{r.curso}</td><td>{r.tipo}</td><td>{r.hora}</td>
                 <td><span className={`app-badge ${r.estado === 'Registrado' ? 'ok' : 'bad'}`}>{r.estado}</span></td>
